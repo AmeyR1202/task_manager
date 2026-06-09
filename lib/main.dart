@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
         title: 'Task Manager',
         debugShowCheckedModeBanner: false,
         routerConfig: router,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
+        theme: AppTheme.darkTheme,
+        themeMode: ThemeMode.dark, // Force dark mode to match the design
       ),
     );
   }

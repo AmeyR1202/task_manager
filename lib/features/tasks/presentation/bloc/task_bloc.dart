@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_manager/features/tasks/domain/usecases/add_task_usecase.dart';
 import 'package:task_manager/features/tasks/domain/usecases/delete_task_usecase.dart';
 import 'package:task_manager/features/tasks/domain/usecases/get_task_usecase.dart';
