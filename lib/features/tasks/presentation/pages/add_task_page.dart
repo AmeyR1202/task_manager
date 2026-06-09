@@ -72,7 +72,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Title is required'; // This shows the red text automatically
+                      return 'Name is required';
                     }
                     return null;
                   },
@@ -119,18 +119,34 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 SizedBox(height: 10),
                 Row(
                   children: [
-                    PriorityButton(text: "Low", isSelected: true, onTap: () {}),
+                    PriorityButton(
+                      text: "Low",
+                      isSelected: selectedPriority == TaskPriority.low,
+                      onTap: () {
+                        setState(() {
+                          selectedPriority = TaskPriority.low;
+                        });
+                      },
+                    ),
                     SizedBox(width: 8),
                     PriorityButton(
                       text: "Medium",
-                      isSelected: true,
-                      onTap: () {},
+                      isSelected: selectedPriority == TaskPriority.medium,
+                      onTap: () {
+                        setState(() {
+                          selectedPriority = TaskPriority.medium;
+                        });
+                      },
                     ),
                     SizedBox(width: 8),
                     PriorityButton(
                       text: "High",
-                      isSelected: true,
-                      onTap: () {},
+                      isSelected: selectedPriority == TaskPriority.high,
+                      onTap: () {
+                        setState(() {
+                          selectedPriority = TaskPriority.high;
+                        });
+                      },
                     ),
                   ],
                 ),
@@ -145,7 +161,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           id: const Uuid().v4(),
                           title: title,
                           description: description,
-                          priority: TaskPriority.medium,
+                          dueDate: selectedDueDate,
+                          priority: selectedPriority,
                           isCompleted: false,
                         );
 
@@ -153,7 +170,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         context.pop();
                       }
                     },
-                    child: const Text('Save Task'),
+                    child: const Text(
+                      'Create Task',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],
