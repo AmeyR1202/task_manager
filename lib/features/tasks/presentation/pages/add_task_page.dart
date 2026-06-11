@@ -10,13 +10,26 @@ import 'package:task_manager/features/tasks/presentation/bloc/task_bloc.dart';
 import 'package:task_manager/features/tasks/presentation/bloc/task_event.dart';
 
 class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({super.key});
+  final TaskEntity? existingTask;
+
+  const AddTaskPage({super.key, this.existingTask});
 
   @override
   State<AddTaskPage> createState() => _AddTaskPageState();
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingTask != null) {
+      title = widget.existingTask!.title;
+      description = widget.existingTask!.description ?? '';
+      selectedPriority = widget.existingTask!.priority;
+      selectedDueDate = widget.existingTask!.dueDate; // Make sure to retain existing due date!
+    }
+  }
+
   final _formKey = GlobalKey<FormState>();
   DateTime? selectedDueDate;
   TaskPriority selectedPriority = TaskPriority.medium;
@@ -54,6 +67,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    final dueDate = selectedDueDate ?? widget.existingTask?.dueDate;
     return Scaffold(
       appBar: AppBar(title: const Text('Create new task')),
       body: SafeArea(
@@ -65,8 +79,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Name',
+                  initialValue: widget.existingTask?.title,
+                  decoration: InputDecoration(
+                    hintText: "Name",
                     hintStyle: TextStyle(color: AppTheme.textSecondary),
                     border: OutlineInputBorder(),
                   ),
@@ -80,9 +95,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  initialValue: widget.existingTask?.description,
                   maxLines: 5,
                   minLines: 5,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Description',
                     hintStyle: TextStyle(color: AppTheme.textSecondary),
                     border: OutlineInputBorder(),
@@ -105,9 +121,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            selectedDueDate == null
+                            dueDate == null
                                 ? 'Select Due Date'
-                                : '${selectedDueDate!.day}/${selectedDueDate!.month}/${selectedDueDate!.year} - ${selectedDueDate!.hour}:${selectedDueDate!.minute}',
+                                : '${dueDate.day}/${dueDate.month}/${dueDate.year} - ${dueDate.hour}:${dueDate.minute}',
                           ),
                         ),
                       ],
@@ -157,21 +173,27 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        final newTask = TaskEntity(
-                          id: const Uuid().v4(),
+                        final task = TaskEntity(
+                          id: widget.existingTask?.id ?? const Uuid().v4(),
                           title: title,
                           description: description,
                           dueDate: selectedDueDate,
-                          priority: selectedPriority,
-                          isCompleted: false,
+                          priority: selectedPriority, // ADDED THIS BACK
+                          isCompleted: widget.existingTask?.isCompleted ?? false,
                         );
 
-                        context.read<TaskBloc>().add(AddNewTaskEvent(newTask));
+                        context.read<TaskBloc>().add(
+                          widget.existingTask == null
+                              ? AddNewTaskEvent(task)
+                              : UpdateExistingTaskEvent(task),
+                        );
                         context.pop();
                       }
                     },
-                    child: const Text(
-                      'Create Task',
+                    child: Text(
+                      widget.existingTask == null
+                          ? 'Create Task'
+                          : 'Update Task',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
