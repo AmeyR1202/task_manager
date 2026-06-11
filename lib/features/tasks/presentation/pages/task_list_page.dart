@@ -6,9 +6,15 @@ import 'package:task_manager/features/tasks/presentation/bloc/task_bloc.dart';
 import 'package:task_manager/features/tasks/presentation/bloc/task_state.dart';
 import 'package:task_manager/features/tasks/presentation/widgets/task_item_widget.dart';
 
-class TaskListPage extends StatelessWidget {
+class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
 
+  @override
+  State<TaskListPage> createState() => _TaskListPageState();
+}
+
+class _TaskListPageState extends State<TaskListPage> {
+  String _currentFilter = 'All';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,6 +22,27 @@ class TaskListPage extends StatelessWidget {
         title: const Text(
           'My Tasks',
         ), // TODO: integrate some sort of filtering on the tasks later
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              setState(() {
+                _currentFilter = value;
+              });
+            },
+            icon: const Icon(Icons.filter_list),
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'All', child: Text('All Tasks')),
+              const PopupMenuItem(
+                value: 'Pending',
+                child: Text('Pending Tasks'),
+              ),
+              const PopupMenuItem(
+                value: 'Completed',
+                child: Text('Completed Tasks'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
@@ -29,7 +56,12 @@ class TaskListPage extends StatelessWidget {
               ),
             );
           } else if (state is TaskLoaded) {
-            if (state.tasks.isEmpty) {
+            final filteredTasks = state.tasks.where((task) {
+              if (_currentFilter == 'Completed') return task.isCompleted;
+              if (_currentFilter == 'Pending') return task.isCompleted == false;
+              return true; // allows the tasks to be present in one list (each & every task)
+            }).toList();
+            if (filteredTasks.isEmpty) {
               return const Center(
                 child: Text(
                   'No Tasks found. Add a new one!',
@@ -37,7 +69,7 @@ class TaskListPage extends StatelessWidget {
                 ),
               );
             }
-            
+
             return ListView.builder(
               itemCount: state.tasks.length,
               itemBuilder: (context, index) {
@@ -46,7 +78,7 @@ class TaskListPage extends StatelessWidget {
               },
             );
           }
-          
+
           return const SizedBox.shrink();
         },
       ),
