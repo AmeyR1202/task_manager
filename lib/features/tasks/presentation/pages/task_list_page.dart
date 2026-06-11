@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:task_manager/features/tasks/presentation/bloc/task_bloc.dart';
@@ -19,9 +18,7 @@ class _TaskListPageState extends State<TaskListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Tasks',
-        ), // TODO: integrate some sort of filtering on the tasks later
+        title: const Text('My Tasks'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {

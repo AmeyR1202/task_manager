@@ -13,10 +13,9 @@ class AppTheme {
 
   static ThemeData get darkTheme {
     return ThemeData(
-      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).apply(
-        bodyColor: textPrimary,
-        displayColor: textPrimary,
-      ),
+      textTheme: GoogleFonts.outfitTextTheme(
+        ThemeData.dark().textTheme,
+      ).apply(bodyColor: textPrimary, displayColor: textPrimary),
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: backgroundColor,
