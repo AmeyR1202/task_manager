@@ -71,9 +71,9 @@ class _TaskListPageState extends State<TaskListPage> {
             }
 
             return ListView.builder(
-              itemCount: state.tasks.length,
+              itemCount: filteredTasks.length,
               itemBuilder: (context, index) {
-                final task = state.tasks[index];
+                final task = filteredTasks[index];
                 return TaskItemWidget(task: task);
               },
             );
