@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:task_manager/core/theme/app_theme.dart';
-import 'package:task_manager/features/tasks/presentation/widgets/priority_button_widget.dart';
-import 'package:uuid/uuid.dart';
 import 'package:task_manager/features/tasks/domain/entities/task_entity.dart';
 import 'package:task_manager/features/tasks/presentation/bloc/task_bloc.dart';
 import 'package:task_manager/features/tasks/presentation/bloc/task_event.dart';
+import 'package:task_manager/features/tasks/presentation/widgets/date_picker_tile_widget.dart';
+import 'package:task_manager/features/tasks/presentation/widgets/priority_selector_widget.dart';
+import 'package:uuid/uuid.dart';
 
 class AddTaskPage extends StatefulWidget {
   final TaskEntity? existingTask;
@@ -26,7 +27,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
       title = widget.existingTask!.title;
       description = widget.existingTask!.description ?? '';
       selectedPriority = widget.existingTask!.priority;
-      selectedDueDate = widget.existingTask!.dueDate; // Make sure to retain existing due date!
+      selectedDueDate = widget.existingTask!.dueDate;
     }
   }
 
@@ -43,6 +44,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
 
     if (pickedDate == null) return;
+
+    if (!mounted) return;
 
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
@@ -80,7 +83,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
               children: [
                 TextFormField(
                   initialValue: widget.existingTask?.title,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Name",
                     hintStyle: TextStyle(color: AppTheme.textSecondary),
                     border: OutlineInputBorder(),
@@ -98,88 +101,52 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   initialValue: widget.existingTask?.description,
                   maxLines: 5,
                   minLines: 5,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Description',
                     hintStyle: TextStyle(color: AppTheme.textSecondary),
                     border: OutlineInputBorder(),
                   ),
                   onChanged: (val) => description = val,
                 ),
-                SizedBox(height: 10),
-                GestureDetector(
-                  onTap: _selectDueDate,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            dueDate == null
-                                ? 'Select Due Date'
-                                : '${dueDate.day}/${dueDate.month}/${dueDate.year} - ${dueDate.hour}:${dueDate.minute}',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text("Priority"),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    PriorityButton(
-                      text: "Low",
-                      isSelected: selectedPriority == TaskPriority.low,
-                      onTap: () {
-                        setState(() {
-                          selectedPriority = TaskPriority.low;
-                        });
-                      },
-                    ),
-                    SizedBox(width: 8),
-                    PriorityButton(
-                      text: "Medium",
-                      isSelected: selectedPriority == TaskPriority.medium,
-                      onTap: () {
-                        setState(() {
-                          selectedPriority = TaskPriority.medium;
-                        });
-                      },
-                    ),
-                    SizedBox(width: 8),
-                    PriorityButton(
-                      text: "High",
-                      isSelected: selectedPriority == TaskPriority.high,
-                      onTap: () {
-                        setState(() {
-                          selectedPriority = TaskPriority.high;
-                        });
-                      },
-                    ),
-                  ],
+                const SizedBox(height: 10),
+                DatePickerTileWidget(dueDate: dueDate, onTap: _selectDueDate),
+                const SizedBox(height: 20),
+                PrioritySelectorWidget(
+                  selectedPriority: selectedPriority,
+                  onPriorityChanged: (priority) {
+                    setState(() {
+                      selectedPriority = priority;
+                    });
+                  },
                 ),
 
-                Spacer(),
+                const Spacer(),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        final finalDueDate =
+                            selectedDueDate ?? widget.existingTask?.dueDate;
+
+                        if (finalDueDate == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a due date'),
+                              backgroundColor: AppTheme.errorColor,
+                            ),
+                          );
+                          return;
+                        }
+
                         final task = TaskEntity(
                           id: widget.existingTask?.id ?? const Uuid().v4(),
                           title: title,
                           description: description,
-                          dueDate: selectedDueDate,
-                          priority: selectedPriority, // ADDED THIS BACK
-                          isCompleted: widget.existingTask?.isCompleted ?? false,
+                          dueDate: finalDueDate,
+                          priority: selectedPriority,
+                          isCompleted:
+                              widget.existingTask?.isCompleted ?? false,
                         );
 
                         context.read<TaskBloc>().add(
@@ -194,7 +161,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       widget.existingTask == null
                           ? 'Create Task'
                           : 'Update Task',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
