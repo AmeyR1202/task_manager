@@ -64,7 +64,7 @@ class _TaskListPageState extends State<TaskListPage> {
                   _currentFilter == "All"
                       ? 'No Tasks found. Add a new one!'
                       : 'No ${_currentFilter.toLowerCase()} tasks',
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               );
             }
