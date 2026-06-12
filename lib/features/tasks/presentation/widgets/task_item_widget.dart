@@ -40,8 +40,10 @@ class TaskItemWidget extends StatelessWidget {
           final taskBloc = context.read<TaskBloc>();
           taskBloc.add(DeleteExistingTaskEvent(task.id));
 
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
+          final messenger = ScaffoldMessenger.of(context);
+          
+          messenger.clearSnackBars();
+          messenger.showSnackBar(
             SnackBar(
               content: const Text('Task deleted'),
               duration: const Duration(seconds: 3),
@@ -53,6 +55,10 @@ class TaskItemWidget extends StatelessWidget {
               ),
             ),
           );
+
+          Future.delayed(const Duration(seconds: 3), () {
+            messenger.hideCurrentSnackBar();
+          });
         },
         child: Container(
           margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
