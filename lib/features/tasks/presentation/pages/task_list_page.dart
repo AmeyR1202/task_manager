@@ -59,9 +59,11 @@ class _TaskListPageState extends State<TaskListPage> {
               return true; // allows the tasks to be present in one list (each & every task)
             }).toList();
             if (filteredTasks.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
-                  'No Tasks found. Add a new one!',
+                  _currentFilter == "All"
+                      ? 'No Tasks found. Add a new one!'
+                      : 'No ${_currentFilter.toLowerCase()} tasks',
                   style: TextStyle(fontSize: 16),
                 ),
               );
