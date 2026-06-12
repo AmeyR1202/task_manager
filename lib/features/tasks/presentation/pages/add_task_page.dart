@@ -26,9 +26,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
       title = widget.existingTask!.title;
       description = widget.existingTask!.description ?? '';
       selectedPriority = widget.existingTask!.priority;
-      selectedDueDate = widget
-          .existingTask!
-          .dueDate; // Make sure to retain existing due date!
+      selectedDueDate = widget.existingTask!.dueDate;
     }
   }
 
@@ -142,6 +140,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     PriorityButton(
                       text: "Low",
                       isSelected: selectedPriority == TaskPriority.low,
+                      selectedColor: AppTheme.successColor,
                       onTap: () {
                         setState(() {
                           selectedPriority = TaskPriority.low;
@@ -152,6 +151,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     PriorityButton(
                       text: "Medium",
                       isSelected: selectedPriority == TaskPriority.medium,
+                      selectedColor: AppTheme.warningColor,
                       onTap: () {
                         setState(() {
                           selectedPriority = TaskPriority.medium;
@@ -162,6 +162,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     PriorityButton(
                       text: "High",
                       isSelected: selectedPriority == TaskPriority.high,
+                      selectedColor: AppTheme.errorColor,
                       onTap: () {
                         setState(() {
                           selectedPriority = TaskPriority.high;
@@ -177,12 +178,25 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        final finalDueDate =
+                            selectedDueDate ?? widget.existingTask?.dueDate;
+
+                        if (finalDueDate == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a due date'),
+                              backgroundColor: AppTheme.errorColor,
+                            ),
+                          );
+                          return;
+                        }
+
                         final task = TaskEntity(
                           id: widget.existingTask?.id ?? const Uuid().v4(),
                           title: title,
                           description: description,
-                          dueDate: selectedDueDate,
-                          priority: selectedPriority, // ADDED THIS BACK
+                          dueDate: finalDueDate,
+                          priority: selectedPriority,
                           isCompleted:
                               widget.existingTask?.isCompleted ?? false,
                         );

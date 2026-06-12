@@ -10,6 +10,11 @@ class AppTheme {
   static const Color primaryPink = Color(0xFFE28AB1);
   static const Color textPrimary = Colors.white;
   static const Color textSecondary = Color(0xFFA0A0A0);
+  
+  // Semantic Colors
+  static const Color errorColor = Color(0xFFE57373); // Red / High Priority
+  static const Color warningColor = Color(0xFFFFB74D); // Amber / Medium Priority
+  static const Color successColor = Color(0xFF81C784); // Green / Low Priority
 
   static ThemeData get darkTheme {
     return ThemeData(

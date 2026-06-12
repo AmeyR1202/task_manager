@@ -44,6 +44,7 @@ class TaskItemWidget extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Task deleted'),
+              duration: const Duration(seconds: 3),
               action: SnackBarAction(
                 label: 'UNDO',
                 onPressed: () {
@@ -162,11 +163,11 @@ class TaskItemWidget extends StatelessWidget {
   Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.high:
-        return Colors.red.withValues(alpha: 0.5);
+        return AppTheme.errorColor.withValues(alpha: 0.5);
       case TaskPriority.medium:
-        return Colors.amber.withValues(alpha: 0.5);
+        return AppTheme.warningColor.withValues(alpha: 0.5);
       case TaskPriority.low:
-        return Colors.green.withValues(alpha: 0.5);
+        return AppTheme.successColor.withValues(alpha: 0.5);
     }
   }
 }
