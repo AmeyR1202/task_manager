@@ -6,7 +6,8 @@ import 'package:task_manager/core/theme/app_theme.dart';
 import 'package:task_manager/features/tasks/domain/entities/task_entity.dart';
 import 'package:task_manager/features/tasks/presentation/bloc/task_bloc.dart';
 import 'package:task_manager/features/tasks/presentation/bloc/task_event.dart';
-import 'package:task_manager/features/tasks/presentation/widgets/priority_button_widget.dart';
+import 'package:task_manager/features/tasks/presentation/widgets/date_picker_tile_widget.dart';
+import 'package:task_manager/features/tasks/presentation/widgets/priority_selector_widget.dart';
 import 'package:uuid/uuid.dart';
 
 class AddTaskPage extends StatefulWidget {
@@ -108,68 +109,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   onChanged: (val) => description = val,
                 ),
                 const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: _selectDueDate,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            dueDate == null
-                                ? 'Select Due Date'
-                                : '${dueDate.day}/${dueDate.month}/${dueDate.year} - ${dueDate.hour}:${dueDate.minute}',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text("Priority"),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    PriorityButton(
-                      text: "Low",
-                      isSelected: selectedPriority == TaskPriority.low,
-                      selectedColor: AppTheme.successColor,
-                      onTap: () {
-                        setState(() {
-                          selectedPriority = TaskPriority.low;
-                        });
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    PriorityButton(
-                      text: "Medium",
-                      isSelected: selectedPriority == TaskPriority.medium,
-                      selectedColor: AppTheme.warningColor,
-                      onTap: () {
-                        setState(() {
-                          selectedPriority = TaskPriority.medium;
-                        });
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    PriorityButton(
-                      text: "High",
-                      isSelected: selectedPriority == TaskPriority.high,
-                      selectedColor: AppTheme.errorColor,
-                      onTap: () {
-                        setState(() {
-                          selectedPriority = TaskPriority.high;
-                        });
-                      },
-                    ),
-                  ],
+                DatePickerTileWidget(dueDate: dueDate, onTap: _selectDueDate),
+                const SizedBox(height: 20),
+                PrioritySelectorWidget(
+                  selectedPriority: selectedPriority,
+                  onPriorityChanged: (priority) {
+                    setState(() {
+                      selectedPriority = priority;
+                    });
+                  },
                 ),
 
                 const Spacer(),
